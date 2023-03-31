@@ -1,9 +1,91 @@
-<script>
-str = `
-window.yandex?.i18n?.getUILanguage?.() = ${window.yandex?.i18n?.getUILanguage?.()}<br>
-window.chrome?.i18n?.getUILanguage?.() = ${window.chrome?.i18n?.getUILanguage?.()}<br>
-navigator.language = ${navigator.language}<br>
-navigator.languages = ${navigator.languages}<br>
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <script>
+    window.str = `
+window.yandex?.i18n?.getUILanguage?.() = ${window.yandex?.i18n?.getUILanguage?.()}
+window.chrome?.i18n?.getUILanguage?.() = ${window.chrome?.i18n?.getUILanguage?.()}
+navigator.language = ${navigator.language}
+navigator.languages = ${navigator.languages}
 `;
-document.write(str);
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>check-locale</title>
+  <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+  <style>
+      body {
+          display: flex;
+          font-family: 'Lato', sans-serif;
+          margin: 0;
+          min-height: 100vh;
+      }
+
+      .block {
+          display: grid;
+          grid-template-columns: max-content 1fr;
+          margin: auto;
+          text-transform: uppercase;
+          width: max-content;
+      }
+
+      .texts {
+          display: flex;
+          grid-column: 1;
+          justify-content: space-between;
+      }
+  </style>
+</head>
+
+<body>
+<blockquote class="block">
+</blockquote>
+
+<script>
+  const strLines = window.str.slice(1,-1).split('\n')
+  const createLine = strLine => `<span class="texts">${strLine}</span><span class="append"></span>`;
+  const resultHtml = strLines.map(createLine).join('\n');
+
+  document.querySelector('.block').innerHTML = resultHtml;
+
+  const lines = document.querySelectorAll(".texts");
+  const appendages = document.querySelectorAll(".append");
+
+  const wrapCharacters = function(lines) {
+    return lines.forEach(function(line) {
+      const characters = line.innerHTML.split("");
+      const wrappedCharacters = characters
+        .map(function(character) {
+          if (character === " ") {
+            return '<span class="texts">&nbsp;</span>';
+          }
+          return '<span class="texts">' + character + "</span>";
+        })
+        .join("");
+      return (line.innerHTML = wrappedCharacters);
+    });
+  };
+
+  const useSiblingFontSize = function(elem) {
+    elem.style.fontSize = elem.previousSibling.style.fontSize;
+  };
+
+  const setFontSize = function(elems) {
+    return elems.forEach(function(elem) {
+      if (!elem.classList.contains("append")) {
+        return (elem.style.fontSize = 120 / elem.innerHTML.length + "vw");
+      }
+      return useSiblingFontSize(elem);
+    });
+  };
+
+  const formatTextBlocks = function() {
+    setFontSize(lines);
+    setFontSize(appendages);
+    wrapCharacters(lines);
+  };
+
+  formatTextBlocks();
 </script>
+</body>
+</html>
